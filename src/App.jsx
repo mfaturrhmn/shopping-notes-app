@@ -22,7 +22,7 @@ const groceryItems = [
 ];
 
 export default function App() {
-  const [items, setItems] = useState(groceryItems);
+  const [items, setItems] = useState([]);
 
   function handleAddItems(item) {
     setItems([...items, item]);
@@ -32,11 +32,23 @@ export default function App() {
     setItems((items) => items.filter((item) => item.id !== id));
   }
 
+  function handleToggleItem(id) {
+    setItems((items) =>
+      items.map((item) =>
+        item.id === id ? { ...item, checked: !item.checked } : item
+      )
+    );
+  }
+
   return (
     <div className="app">
       <Header />
       <Form onAddItems={handleAddItems} />
-      <GroceryList items={items} onDeleteItems={handleDeleteItems} />
+      <GroceryList
+        items={items}
+        onDeleteItems={handleDeleteItems}
+        onToggleItem={handleToggleItem}
+      />
       <Footer />
     </div>
   );
@@ -90,13 +102,18 @@ function Form({ onAddItems }) {
   );
 }
 
-function GroceryList({ items, onDeleteItems }) {
+function GroceryList({ items, onDeleteItems, onToggleItem }) {
   return (
     <>
       <div className="list">
         <ul>
           {items.map((item) => (
-            <Item item={item} key={item.id} onDeleteItems={onDeleteItems} />
+            <Item
+              item={item}
+              key={item.id}
+              onDeleteItems={onDeleteItems}
+              onToggleItem={onToggleItem}
+            />
           ))}
         </ul>
       </div>
@@ -112,10 +129,14 @@ function GroceryList({ items, onDeleteItems }) {
   );
 }
 
-function Item({ item, onDeleteItems }) {
+function Item({ item, onDeleteItems, onToggleItem }) {
   return (
     <li key={item.id}>
-      <input type="checkbox" />
+      <input
+        type="checkbox"
+        checked={item.checked}
+        onChange={() => onToggleItem(item.id)}
+      />
       <span style={item.checked ? { textDecoration: "line-through" } : {}}>
         {item.quantity} {item.name}
       </span>
