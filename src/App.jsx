@@ -22,11 +22,21 @@ const groceryItems = [
 ];
 
 export default function App() {
+  const [items, setItems] = useState(groceryItems);
+
+  function handleAddItems(item) {
+    setItems([...items, item]);
+  }
+
+  function handleDeleteItems(id) {
+    setItems((items) => items.filter((item) => item.id !== id));
+  }
+
   return (
     <div className="app">
       <Header />
-      <Form />
-      <GroceryList />
+      <Form onAddItems={handleAddItems} />
+      <GroceryList items={items} onDeleteItems={handleDeleteItems} />
       <Footer />
     </div>
   );
@@ -36,7 +46,7 @@ function Header() {
   return <h1>Catatan Belanjaku 📝</h1>;
 }
 
-function Form() {
+function Form({ onAddItems }) {
   const [name, setName] = useState("");
   const [quantity, setQuantity] = useState(1);
 
@@ -46,7 +56,7 @@ function Form() {
     if (!name) return;
 
     const newItem = { name, quantity, checked: false, id: Date.now() };
-    console.log(newItem);
+    onAddItems(newItem);
 
     setName("");
     setQuantity(1);
@@ -80,13 +90,13 @@ function Form() {
   );
 }
 
-function GroceryList() {
+function GroceryList({ items, onDeleteItems }) {
   return (
     <>
       <div className="list">
         <ul>
-          {groceryItems.map((item) => (
-            <Item item={item} key={item.id} />
+          {items.map((item) => (
+            <Item item={item} key={item.id} onDeleteItems={onDeleteItems} />
           ))}
         </ul>
       </div>
@@ -102,14 +112,14 @@ function GroceryList() {
   );
 }
 
-function Item({ item }) {
+function Item({ item, onDeleteItems }) {
   return (
     <li key={item.id}>
       <input type="checkbox" />
       <span style={item.checked ? { textDecoration: "line-through" } : {}}>
         {item.quantity} {item.name}
       </span>
-      <button>&times;</button>
+      <button onClick={() => onDeleteItems(item.id)}>&times;</button>
     </li>
   );
 }
