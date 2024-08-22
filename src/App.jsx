@@ -22,7 +22,7 @@ const groceryItems = [
 ];
 
 export default function App() {
-  const [items, setItems] = useState([]);
+  const [items, setItems] = useState(groceryItems);
 
   function handleAddItems(item) {
     setItems([...items, item]);
@@ -40,6 +40,10 @@ export default function App() {
     );
   }
 
+  function handleClearItems() {
+    setItems([]);
+  }
+
   return (
     <div className="app">
       <Header />
@@ -48,6 +52,7 @@ export default function App() {
         items={items}
         onDeleteItems={handleDeleteItems}
         onToggleItem={handleToggleItem}
+        onClearItems={handleClearItems}
       />
       <Footer />
     </div>
@@ -102,12 +107,28 @@ function Form({ onAddItems }) {
   );
 }
 
-function GroceryList({ items, onDeleteItems, onToggleItem }) {
+function GroceryList({ items, onDeleteItems, onToggleItem, onClearItems }) {
+  const [sortBy, setSortBy] = useState("input");
+
+  let sortedItems;
+
+  if (sortBy === "input") {
+    sortedItems = items;
+  }
+
+  if (sortBy === "name") {
+    sortedItems = items.slice().sort((a, b) => a.name.localeCompare(b.name));
+  }
+
+  if (sortBy === "checked") {
+    sortedItems = items.slice().sort((a, b) => a.checked - b.checked);
+  }
+
   return (
     <>
       <div className="list">
         <ul>
-          {items.map((item) => (
+          {sortedItems.map((item) => (
             <Item
               item={item}
               key={item.id}
@@ -118,12 +139,12 @@ function GroceryList({ items, onDeleteItems, onToggleItem }) {
         </ul>
       </div>
       <div className="actions">
-        <select>
+        <select value={sortBy} onChange={(e) => setSortBy(e.target.value)}>
           <option value="input">Urutkan berdasarkan urutan input</option>
           <option value="name">Urutkan berdasarkan nama barang</option>
           <option value="checked">Urutkan berdasarkan ceklis</option>
         </select>
-        <button>Bersihkan Daftar</button>
+        <button onClick={onClearItems}>Bersihkan Daftar</button>
       </div>
     </>
   );
