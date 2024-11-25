@@ -1,23 +1,11 @@
-export default function List() {
+export default function ShoppingList({ items }) {
   return (
     <>
       <div className="list">
         <ul>
-          <li>
-            <input type="checkbox" />
-            <span> 1 Kopi</span>
-            <button>&times;</button>
-          </li>
-          <li>
-            <input type="checkbox" />
-            <span>5 Gula Pasir</span>
-            <button>&times;</button>
-          </li>
-          <li>
-            <input type="checkbox" />
-            <span>3 Air Mineral</span>
-            <button>&times;</button>
-          </li>
+          {items.map((item) => (
+            <List item={item} key={item.id} />
+          ))}
         </ul>
       </div>
       <div className="actions">
@@ -28,7 +16,18 @@ export default function List() {
         </select>
         <button>Bersihkan Daftar</button>
       </div>
-      
     </>
+  );
+}
+
+function List(props) {
+  return (
+    <li key={props.item.id}>
+      <input type="checkbox"></input>
+      <span style={props.item.check ? { textDecoration: "line-through" } : {}}>
+        {props.item.quantity} {props.item.name}
+      </span>
+      <button>&times;</button>
+    </li>
   );
 }
